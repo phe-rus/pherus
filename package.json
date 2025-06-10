@@ -9,7 +9,11 @@
     "lint": "next lint",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "cfgen": "wrangler types --env-interface CloudflareEnv ./cloudflare-env.d.ts"
+    "cfgen": "wrangler types --env-interface CloudflareEnv ./cloudflare-env.d.ts",
+    "db:gen": "drizzle-kit generate",
+    "db:studio": "drizzle-kit studio",
+    "db:local": "wrangler d1 migrations apply pherus --local",
+    "db:prod": "wrangler d1 migrations apply pherus --remote"
   },
   "dependencies": {
     "@opennextjs/cloudflare": "^1.2.1",
@@ -23,8 +27,11 @@
     "@radix-ui/react-tabs": "^1.1.12",
     "@radix-ui/react-tooltip": "^1.2.7",
     "@tabler/icons-react": "^3.34.0",
+    "better-auth": "^1.2.9",
+    "better-sqlite3": "^11.10.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "drizzle-orm": "^0.44.2",
     "geist": "^1.4.2",
     "hono": "^4.7.11",
     "lucide-react": "^0.513.0",
@@ -38,9 +45,11 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "drizzle-kit": "^0.31.1",
     "eslint": "^9",
     "eslint-config-next": "15.3.3",
     "tailwindcss": "^4",
@@ -48,5 +57,5 @@
     "typescript": "^5",
     "wrangler": "^4.19.1"
   },
-  "packageManager": "pnpm@10.11.1"
+  "packageManager": "pnpm@10.12.1"
 }

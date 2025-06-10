@@ -11,5 +11,13 @@
   "observability": {
     "enabled": true
   },
-  "placement": { "mode": "smart" }
+  "placement": { "mode": "smart" },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "pherus",
+      "database_id": "84985a53-a496-419c-ac34-49c818935077",
+      "migrations_dir": ".migrations"
+    }
+  ]
 }
