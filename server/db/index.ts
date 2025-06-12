@@ -1,5 +1,6 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { drizzle } from "drizzle-orm/d1";
+import * as schema from "./schema";
 import { cache } from "react";
 
 /**
@@ -8,7 +9,11 @@ import { cache } from "react";
  */
 const getDatabase = cache(async () => {
   const { env } = await getCloudflareContext({ async: true });
-  const db = drizzle(env.DB);
+  const db = drizzle(env.DB, {
+    schema: {
+      ...schema,
+    },
+  });
 
   return {
     db,

@@ -1,59 +1,33 @@
-import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { nanoid } from "nanoid";
+
+const uidGen = nanoid(38);
+export type providers = "EMAIL&PASSWORD" | "GOOGLE" | "GITHUB";
+export type roles = "owner" | "admin" | "user" | "editor";
 
 // prettier-ignore
-export const user = sqliteTable("user", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull(),
-  email: text("email").notNull().unique(),
-  emailVerified: integer("email_verified", { mode: "boolean" }).$defaultFn(() => false).notNull(),
-  image: text("image"),
-  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => /* @__PURE__ */ new Date()).notNull(),
-  updatedAt: integer("updated_at", { mode: "timestamp" }).$defaultFn(() => /* @__PURE__ */ new Date()).notNull(),
+export const users = sqliteTable("users", {
+  uid: text("uid").primaryKey().unique().$default(()=> uidGen),
+  identifier: text("identifier").notNull(), // often the email or username or telephone numbers
+  provider: text("provider").notNull().$type<providers>(),
+  passwordHash: text("hash").notNull(),
+  username: text("username").notNull(),
+  enableUsername: text("enableUsername").$type<boolean>().$default(()=> false),
+  createdAt: text("createdAt").$default(()=> new Date().toISOString()).notNull(),
+  updatedAt: text("updatedAt").$default(()=> new Date().toISOString()).notNull()
 });
 
 // prettier-ignore
-export const session = sqliteTable("session", {
-  id: text("id").primaryKey(),
-  expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
-  token: text("token").notNull().unique(),
-  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
-  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
-  ipAddress: text("ip_address"),
-  userAgent: text("user_agent"),
-  userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
-});
+export const acccounts = sqliteTable("account", {
+  uid: text("uid").notNull().references(()=> users.uid),
+  email: text("email").notNull(),
+  username: text("username").notNull().references(()=> users.username),
+  avatar: text("avatar"),
+  role: text("role").notNull().$type<roles>().$default(()=> "user"),
+  _verified: text("_verified").$type<boolean>().$default(()=> false)
+})
 
-// prettier-ignore
-export const account = sqliteTable("account", {
-  id: text("id").primaryKey(),
-  accountId: text("account_id").notNull(),
-  providerId: text("provider_id").notNull(),
-  userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
-  accessToken: text("access_token"),
-  refreshToken: text("refresh_token"),
-  idToken: text("id_token"),
-  accessTokenExpiresAt: integer("access_token_expires_at", {
-    mode: "timestamp",
-  }),
-  refreshTokenExpiresAt: integer("refresh_token_expires_at", {
-    mode: "timestamp",
-  }),
-  scope: text("scope"),
-  password: text("password"),
-  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
-  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
-});
-
-// prettier-ignore
-export const verification = sqliteTable("verification", {
-  id: text("id").primaryKey(),
-  identifier: text("identifier").notNull(),
-  value: text("value").notNull(),
-  expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
-  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(
-    () => /* @__PURE__ */ new Date()
-  ),
-  updatedAt: integer("updated_at", { mode: "timestamp" }).$defaultFn(
-    () => /* @__PURE__ */ new Date()
-  ),
-});
+export type InsertUsersTypes = typeof users.$inferInsert;
+export type SelectUsersTypes = typeof users.$inferSelect;
+export type InsertAccountTypes = typeof acccounts.$inferInsert;
+export type SelectAccountTypes = typeof acccounts.$inferSelect;
